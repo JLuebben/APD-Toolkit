@@ -1,4 +1,3 @@
-__author__ = 'claudia'
 '''
 Created on 04.06.2014
 
@@ -11,7 +10,7 @@ The plugin assigns resp-charges to all atoms of a
 molecule according to their invariom name.
 In order to do this it needs a file called 
 chargeDABA.txt containing all invariomnames with
-the correcponding resp charges.
+the corresponding resp charges.
 An according xd.resp.inp file is written, in which
 the monopole populations are set according to the 
 resp charges.
@@ -36,38 +35,29 @@ function which returns:
       calls the 'enter(), headline(), bottomline()
       and exit()' methods.
 '''
-KEY = 'resp'
-#OPTION_ARGUMENTS = ['neutral']
-OPTION_ARGUMENTS = {'neutral':'a', 'charge':0}
+KEY = 'pqr'
+OPTION_ARGUMENTS = ['neutral']
 
 
 def run(conf):
     global config
     config = conf
     printer = config.setup()
-    printer('\nThe resp_plugin has been successfully' \
-            ' started.\nNow, resp-charges are assigned according to their invariom name.' \
+    printer('\nThe resp_pqr_plugin has been successfully started.\n' \
+            'Now, resp-charges are assigned according to their invariom name.' \
             '\nIn order to do this a file called chargeDABA.txt \ncontaining all invariomnames with' \
-            ' the corresponding resp charges is needed in the apd/data/ folder.\n')
+            'the correcponding resp charges is needed.\n')
 
     printer('\nAsking config for value of option \'load\': {}'.format(config.arg('load')))
     printer('Asking config for value of option \'x\': {}'.format(config.arg('x')))
 
-    filename = 'xd.resp'
-    loader = config.get_variable('loader')
-    writer = loader.get_write_copy(filename)
-
-    global multidict
-    multidict = {}
-    global electron_number
-    from lauescript.cryst.tables import electron_number
-    #from apd.lib.invstring2 import get_invariom_names
     import lauescript.invstring2 as invstring
 
-    ###--------reading chargeDABA.txt into dictionary chargedict ---------------#
+    config.call('applyhdist')
 
-    global chargedict
+    ###--------reading chargeDABA.txt into dictionary chargedict ---------------#
     path_string = conf.get_databasepath()
+    global chargedict
     chargedict = {}
     f = open(path_string + '/chargeDABA.txt', 'r')
     for line in f.readlines():
@@ -92,13 +82,12 @@ def run(conf):
             molcount = atom.molecule_id
             resp_arrays[atom.molecule_id]= []
     molcount=molcount+1
-    printer('{} molecule(s) were detected.'.format(molcount))
+    printer('{} molecule(s) detected.'.format(molcount))
     for j in range(0,molcount):
         resp_arrays[j] = []
         atomcounts[j] = 0
         average_charges[j] = 0.0
-        chargedicts[j] = {}
-
+        chargedicts[j]={}
     for atom in data['exp'].atoms:
             atomcounts[atom.molecule_id] = atomcounts[atom.molecule_id] + 1
 
@@ -108,13 +97,12 @@ def run(conf):
     average_corrections = {}
     overallcharges = {}
     resp = 0.0
-    monopole_pop = 0.0
 
     charged=config.arg("charged")
     import charge_lib
     for j in range(0,molcount):
+        overallcharges[j]=0.0
         overallcharges[j]=charge_lib.check_charges(j, atomcounts, charged, printer )
-
 
     ###  Electroneutrality correction
     ###-------------collecting charges for the molecule 
@@ -125,9 +113,7 @@ def run(conf):
 
     neutral = config.arg("neutral")
     if not neutral or neutral == "a":
-        #printer(neutral)
-
-        data = config.get_variable()
+        printer(neutral)
         for atom in data['exp'].atoms:
             import charge_lib
             charge_lib.build_resp_arrays( atom, resp_arrays, chargedict, average_charges)
@@ -142,6 +128,7 @@ def run(conf):
             printer('Correction for every atom: {:5.3f}'.format(average_corrections[key]))
             printer('Average charge per atom: {:5.3f}, correction in percent: {:5.2f}%'.format(average_charges[key]/atomcounts[key],100*average_corrections[key]/(average_charges[key]/atomcounts[key])))
 
+
         ###  Assigning charge
         #print '\natom elec val_elec invariom resp_charge corr_charge\n'
             #i = 0
@@ -154,21 +141,23 @@ def run(conf):
 
                     if atom.invariom_name not in already_corrected_inv_list:
                         charge = resp - average_corrections[key]
-                        chargedicts[key][atom.invariom_name] = charge
-                        already_corrected_inv_list.append(atom.invariom_name)
-                    else:
-                        charge = resp - average_corrections[key]
-                        resp = charge
-                    #print atom.name, atom.invariom_name, resp, charge
 
+                        #chargedict[atom.invariom_name] = charge
+                        already_corrected_inv_list.append(atom.invariom_name)
+                        chargedicts[key][atom.invariom_name] = charge
+                    else:
+                        charge = resp- average_corrections[key]
+                        #resp = charge + average_corrections[key]
+                    #print atom.name, atom.invariom_name, resp, charge
 
     ### ----Option b
     ###-------------via a correction averaged all hydrogen atoms only
+
     elif neutral == "b":
         printer(neutral)
         data = config.get_variable()
         Hatomcounts = {}
-        for j in range (0,molcount):
+        for j in range(0,molcount):
             Hatomcounts[j] = 0
         for atom in data['exp'].atoms:
             if atom.element == "H":
@@ -179,14 +168,14 @@ def run(conf):
             printer(key)
             printer('\nNumber of H atoms read:')
             printer(Hatomcounts[key])
-            printer('\nCharges of the invarioms')
+            printer('Charges of the invarioms')
             printer(resp_arrays[key])
             printer('\nCharge of molecule if uncorrected:')
             printer(sum(resp_arrays[key]))
-            printer('\n Deviation from charge of {}:'.format(overallcharges[key]))
+            printer('Deviation from charge of {}:'.format(overallcharges[key]))
             printer(sum(resp_arrays[key])-overallcharges[key])
             average_corrections[key] = float(float((sum(resp_arrays[key])-overallcharges[key])) / float(Hatomcounts[key]))
-            printer('\nCorrection for every H atom:')
+            printer('Correction for every H atom:')
             printer(average_corrections[key])
             printer('\nAverage charge per atom, correction in percent:')
             printer(average_charges[key]/Hatomcounts[key])
@@ -194,12 +183,12 @@ def run(conf):
 
         ###  Assigning charge
         #print '\natom elec val_elec invariom resp_charge corr_charge\n'
-            #i = 0
+            i = 0
             already_corrected_inv_list = []
             data = config.get_variable()
             for atom in data['exp'].atoms:
                 if atom.molecule_id == key :
-                #i = i + 1
+                    i = i + 1
                     resp = chargedict[atom.invariom_name]
                     if atom.element == "H":
                         if atom.invariom_name not in already_corrected_inv_list:
@@ -207,67 +196,45 @@ def run(conf):
                             chargedicts[key][atom.invariom_name] = charge
                             already_corrected_inv_list.append(atom.invariom_name)
                         else:
-                            charge = resp- average_corrections[key]
+                            charge = resp - average_corrections[key]
                             resp = charge
                     else:
                         charge = resp
                         chargedicts[key][atom.invariom_name] = charge
-                    #print atom.name, atom.invariom_name, resp, charge
+            #print atom.name, atom.invariom_name, resp, charge
 
 
+    ### -----------------------------------
+    ###
+    ### Writing the charges into a pqr file
+    ###
+    ### -----------------------------------
 
+    from lauescript.laueio.pdb_iop import PDBIOP
+    global data
+    pdbiop = PDBIOP('test.test')
+    pdbiop.setup(new=True)
+    pdb_data = config.get_variable()
+    pdbiop.set(['cart', 'serial_numbers', 'name_prefixes', 'occupancies',
+                'adp_cart', 'residue_numbers', 'vdw_radii', 'point_charges'],
+               provide_pdb, new=True)
+    #print pdbiop.export('PQR')
 
-    ### -------------------------------------
-    ### -------------------------------------
-    ###  Setting monopole populations
-    #print '\natom elec val_elec invariom resp_charge monop_pop\n'
-    i = 0
-    zero_list = [0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
-                 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000]
-    data = config.get_variable()
-    for atom in data['exp'].atoms:
-        i = i + 1
-        resp = chargedicts[atom.molecule_id][atom.invariom_name]
-        el_num = int(electron_number[atom.element])
-        if el_num < 3:
-            val_num = el_num % 8
-        else:
-            val_num = (el_num - 2) % 8
-        monopole_pop = val_num - resp
-
-        #print atom.name, electron_number[atom.element], val_num, atom.invariom_name, resp, monopole_pop
-        j = 0
-        for atomdata in writer.provide(['multipoles']):
-            j += 1
-            if j == i:
-                #print atomdata[1:]
-                multidict[atomdata[0]] = [monopole_pop] + zero_list
-                #multidict[atomdata[0]]=[monopole_pop]+atomdata[1][1:]
-        ###-----------------------------------
-
-    ### Setting and printing the results
-    attr = ['multipoles']
-    writer.set(attr, provide)
-    writer.write()
+    text_file = open("resp.pqr", "w")
+    ## ADD THE CRYST INSTRUCTUINS HERE
+    text_file.write("CRYST1 {:6.4f} {:6.4f} {:6.4f} {:6.4f} {:6.4f} {:6.4f} \n".format(*data["exp"].get_cell()))
+    text_file.write("%s" % pdbiop.export('PQR'))
+    text_file.close()
     printer(
-        '\n File xd.resp.inp was written, in which the monopole populations are set according to the resp charges :).\n')
-    ###----------------------------------- 	
-
-
+        '\n resp.pqr has been written, with the assigned resp charges and vdw radii according to  J Phys Chem, 2009, p. 5806-5812.\n')
 
 ###-----------
 
-def provide():
-    data = config.get_variable()
-    for atom in data['exp'].atoms:
-        #print atom.name,multidict[atom.name]
-        yield atom.name, multidict[atom.name]
 
-
-#def provide_pdb():
-#    for i, atom in enumerate(data.iter_atoms()):
-#        yield [atom.get_name(), atom.get_cart(), i, atom.get_element(), 1, atom.adp['cart_meas'], 1, None,
-#               chargedict[atom.invariom_name]]
+def provide_pdb():
+    for i, atom in enumerate(data.iter_atoms()):
+        yield [atom.get_name(), atom.get_cart(), i, atom.get_element(), 1, atom.adp['cart_meas'], 1, None,
+               chargedicts[atom.molecule_id][atom.invariom_name]]
 
 ### ---------------------------------------------------------------------------------  hier drueber wird die resp ladung als punkt ladung gesetzt !!!! lezter eintrag in der eckigen klammer!
 

@@ -33,7 +33,7 @@ def check_charges(j, atomcounts, charged, printer ):
 
 
 
-def build_resp_arrays( atom, resp_arrays, chargedict ):
+def build_resp_arrays( atom, resp_arrays, chargedict, average_charges):
 
     #------- alternative invarioms block
     if atom.invarioms.keys()[0] in list(chargedict.keys()):
@@ -57,6 +57,9 @@ def build_resp_arrays( atom, resp_arrays, chargedict ):
                 else: print 'PROBLEM: Found no match for invarioms ', atom.invarioms.keys()[0],atom.invarioms.keys()[1],' of atom ', atom.name, "in charge database."
         else: print'PROBLEM: FOUND no match for invariom of atom ', atom.invarioms.keys()[0], "in charge database."
     #--------- end of alternative invarioms block
+    currentsum=average_charges[atom.molecule_id]
+    average_charges[atom.molecule_id]=currentsum+((resp*resp)**(0.5))
+    #print"adding up charges ", average_charges[atom.molecule_id]
 
 #class resp_arrays:
 #    def __init__(self):

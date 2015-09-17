@@ -55,8 +55,8 @@ def run(pluginManager):
         if atom.element == 'H':
             dist = hdistdict[atom.invariom_name]
             direction_vec= (atom.cart-atom.partner[0].cart)
-            print 'Reset bond length of ', atom, 'from', ((direction_vec[0]**2+direction_vec[1]**2+direction_vec[2]**2)**(-0.5)), 'to', dist
-            #print 'old bond length', ((direction_vec[0]**2+direction_vec[1]**2+direction_vec[2]**2)**(-0.5))
+            #print 'Reset bond length of ', atom, 'from', ((direction_vec[0]**2+direction_vec[1]**2+direction_vec[2]**2)**(-0.5)), 'to', dist
+            ##print 'old bond length', ((direction_vec[0]**2+direction_vec[1]**2+direction_vec[2]**2)**(-0.5))
             norm_direction_vec=[0.0, 0.0, 0.0]
             norm_direction_vec[0]= direction_vec[0]*((direction_vec[0]**2+direction_vec[1]**2+direction_vec[2]**2)**(-0.5))
             norm_direction_vec[1]= direction_vec[1]*((direction_vec[0]**2+direction_vec[1]**2+direction_vec[2]**2)**(-0.5))

@@ -76,16 +76,29 @@ def run(pluginManager):
                     name2=' '
                     name3=' '
                     if 1 < len(hydrogen.invarioms.keys()):
-                        if hydrogen.invarioms.keys()[1] not in hmodelsdict:
+                        if hydrogen.invarioms.keys()[1] not in hdistdict and molecule.name== hmodelsdict[hydrogen.invarioms.keys()[1]]:
                             altcount= altcount+1
                             name2= hydrogen.invarioms.keys()[1]
                             print "alternative invariom name NOT covered jet!!!", hydrogen.invarioms.keys()[1]
+                            hdistdict[hydrogen.invarioms.keys()[1]]   = bond
+                        elif molecule.name== hmodelsdict[hydrogen.invarioms.keys()[1]]:
+                            print "invariom already present, need to average"
+                            print bond, hdistdict[hydrogen.invarioms.keys()[1]], hydrogen.invarioms.keys()[1]
+                            average_bond = mean([bond, hdistdict[hydrogen.invarioms.keys()[1]]])
+                            hdistdict[hydrogen.invarioms.keys()[1]] = average_bond
                         #else:
                             #print "alternative name already covered", hydrogen.invarioms.keys()[1]
                     if 2 < len(hydrogen.invarioms.keys()):
-                        if hydrogen.invarioms.keys()[2] not in hmodelsdict:
+                        if hydrogen.invarioms.keys()[2] not in hdistdict and molecule.name== hmodelsdict[hydrogen.invarioms.keys()[2]]:
                             altcount= altcount+1
                             name3= hydrogen.invarioms.keys()[2]
+                            print "alternative invariom name NOT covered jet!!!", hydrogen.invarioms.keys()[2]
+                            hdistdict[hydrogen.invarioms.keys()[2]]   = bond
+                        elif molecule.name== hmodelsdict[hydrogen.invarioms.keys()[2]]:
+                            print "invariom already present, need to average"
+                            print bond, hdistdict[hydrogen.invarioms.keys()[2]], hydrogen.invarioms.keys()[2]
+                            average_bond = mean([bond, hdistdict[hydrogen.invarioms.keys()[2]]])
+                            hdistdict[hydrogen.invarioms.keys()[2]] = average_bond
                         #else:
                            # print "2nd alternative name already covered", hydrogen.invarioms.keys()[2]
                     #print hydrogen.invarioms.keys()[0], bond, hydrogen.name, name2, name3
@@ -99,7 +112,7 @@ def run(pluginManager):
                         average_bond = mean([bond, hdistdict[hydrogen.invarioms.keys()[0]]])
                         hdistdict[hydrogen.invarioms.keys()[0]] = average_bond
 
-                #### For those cases in which invariom comes from an atom whose 1st alternative invariom name it is
+                #### For those cases in which invariom comes from an atom whose 1st alternative invariom name it is (and the first invariom name is not an invariom supplier)
 
                 elif 1 < len(hydrogen.invarioms.keys()):
                     if molecule.name== hmodelsdict[hydrogen.invarioms.keys()[1]]:
@@ -107,17 +120,24 @@ def run(pluginManager):
                         bond = hydrogen - hydrogen.partner[0]
                         name2=' '
                         name3=' '
-                        if 1 < len(hydrogen.invarioms.keys()):
-                            if hydrogen.invarioms.keys()[1] not in hmodelsdict:
-                                altcount= altcount+1
-                                name2= hydrogen.invarioms.keys()[1]
-                                print "alternative invariom name NOT covered jet!!!", hydrogen.invarioms.keys()[1]
+                        if hydrogen.invarioms.keys()[1] not in hdistdict:
+                            altcount= altcount+1
+                            name2= hydrogen.invarioms.keys()[1]
+                            print "alternative invariom name NOT covered jet!!!", hydrogen.invarioms.keys()[1]
                             #else:
                                 #print "alternative name already covered", hydrogen.invarioms.keys()[1]
                         if 2 < len(hydrogen.invarioms.keys()):
-                            if hydrogen.invarioms.keys()[2] not in hmodelsdict:
+                            if hydrogen.invarioms.keys()[2] not in hdistdict and molecule.name== hmodelsdict[hydrogen.invarioms.keys()[2]]:
                                 altcount= altcount+1
                                 name3= hydrogen.invarioms.keys()[2]
+                                print "alternative invariom name NOT covered jet!!!", hydrogen.invarioms.keys()[2]
+                                hdistdict[hydrogen.invarioms.keys()[2]]   = bond
+                            elif molecule.name== hmodelsdict[hydrogen.invarioms.keys()[2]]:
+                                print "invariom already present, need to average"
+                                print bond, hdistdict[hydrogen.invarioms.keys()[2]], hydrogen.invarioms.keys()[2]
+                                average_bond = mean([bond, hdistdict[hydrogen.invarioms.keys()[2]]])
+                                hdistdict[hydrogen.invarioms.keys()[2]] = average_bond
+
                             #else:
                                # print "2nd alternative name already covered", hydrogen.invarioms.keys()[2]
                         #print hydrogen.invarioms.keys()[0], bond, hydrogen.name, name2, name3
@@ -136,8 +156,22 @@ def run(pluginManager):
                 elif 2 < len(hydrogen.invarioms.keys()):
                     if molecule.name== hmodelsdict[hydrogen.invarioms.keys()[2]]:
                         print "the 2nd alternative invariom name appears in the hmodelsdict thereby in H_MAP.txt", hydrogen.invarioms.keys()[2]
+                        bond = hydrogen - hydrogen.partner[0]
+                        if hydrogen.invarioms.keys()[2] not in hdistdict:
+                                altcount= altcount+1
+                                print "alternative invariom name NOT covered jet!!!", hydrogen.invarioms.keys()[2]
+                                hdistdict[hydrogen.invarioms.keys()[2]]   = bond
+                        elif molecule.name== hmodelsdict[hydrogen.invarioms.keys()[2]]:
+                                print "invariom already present, need to average"
+                                print bond, hdistdict[hydrogen.invarioms.keys()[2]], hydrogen.invarioms.keys()[2]
+                                average_bond = mean([bond, hdistdict[hydrogen.invarioms.keys()[2]]])
+                                hdistdict[hydrogen.invarioms.keys()[2]] = average_bond
+
+
                 #else:
                     #print 'other reason to kick oth this hydrogen atom with invariom:', hydrogen.invarioms.keys()[0]
+
+
 
 
         #else:
