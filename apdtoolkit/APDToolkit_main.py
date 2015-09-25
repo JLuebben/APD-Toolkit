@@ -14,7 +14,10 @@ def main():
         print '\n\n########################################################################################\n'              '#                                         APDToolkit                                           #\n'              '########################################################################################\n'
         print 'A program for '
         exit()
-    argvs=argv[0:1]+['-APDToolkit']+argv[1:]
+    if not '-D' in argv:
+        argvs=argv[0:1]+['-APDToolkit']+argv[1:]
+    else:
+        argvs = argv
     config_file = expanduser(join('~', '.APDToolkit.ini'))
     if not isfile(config_file):
         from lauescript.makeconfig import run
