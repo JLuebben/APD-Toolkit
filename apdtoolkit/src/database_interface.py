@@ -55,7 +55,7 @@ def generate(data):
                              temperatures=temperatures,
                              path=config.config.DatabasePath,
                              root=config.get_config_value('Database', 'modelcompountrootdirectory'),
-                             newh=config.get_config_value('APD', 'newH'))
+                             newh=config.get_config_valueBool('APD', 'newH'))
         return
 
     if config.arg('save'):
@@ -66,4 +66,4 @@ def generate(data):
     db.generate_database(data, config.get_frequency_cutoff(),
                          root=config.get_config_value('Database', 'modelcompountrootdirectory'),
                          frequency_scale=config.get_config_valueFloat('Database', 'frequency_scale'),
-                         newh=config.get_config_value('APD', 'newH'))
+                         newh=config.get_config_valueBool('APD', 'newH'))
