@@ -2,8 +2,8 @@ __author__ = 'jens'
 
 from lauescript.cryst.iterators import iter_atom_pairs
 
-KEY = 'restrain'  # Edit this to control which cmd line keyword starts the plugin.
-OPTION_ARGUMENTS = {'write': 'restraints.txt'}  # Edit this to define cmd line options for
+KEY = 'restrain'
+OPTION_ARGUMENTS = {'write': 'restraints.txt'}
 
 
 def run(pluginManager):
@@ -53,7 +53,8 @@ def run(pluginManager):
     restraints.selfSum()
     bondMap = restraints.mapBonds(restraintList)
     with open(pluginManager.arg('write'), 'w') as fp:
-        fp.write(''.join([str(r) for r in bondMap.keys()]))
+        fp.write('REM Invariom based geometry restraints:')
+        fp.write(''.join([str(r) for r in sorted(bondMap.keys(), key=lambda string: string[17:])]))
 
     printer()
     printer.spacer()
@@ -62,7 +63,7 @@ def run(pluginManager):
 
 
 class Restraint(object):
-    ESDs = {1: 0.01,
+    ESDs = {1: 0.001,
             2: 0.02,
             3: 0.05}
     Prefixes = {1: 'DFIX',
@@ -94,7 +95,7 @@ class Restraint(object):
         if not self.modelCompound == 'exp':
             self.string += '  ! {}'.format(self.modelCompound)
         if modelCompound:
-            self.string += '  ! {}'.format(modelCompound)
+            self.string = '{:<25}  ! {}'.format(self.string, modelCompound)
 
     def __str__(self):
         return self.string
@@ -158,7 +159,7 @@ class RestraintManager(object):
         compoundRestraints = [r for r in compoundRestraints if r.type == type]
         elements = {atom1.get_element(), element2}
         return [r for r in compoundRestraints
-                if len({r.atom1.get_element(), r.atom2.get_element()}.intersection(elements)) == 2 and
+                if len({r.atom1.get_element(), r.atom2.get_element()}.intersection(elements)) == len(elements) and
                 r.distance - distance <= threshold]
 
     def selectRestraints(self, reference, selection):
@@ -171,17 +172,6 @@ class RestraintManager(object):
 
     def selfSum(self):
         self.restraints = self.harvestDict()
-
-    def merge(self, restraints):
-        return self.sum(restraints)
-        grouped = {}
-        for r in restraints:
-            h = self.hashBond(r.atom1, r.atom2, '')
-            try:
-                grouped[h].append(r)
-            except KeyError:
-                grouped[h] = [r]
-        return [self.sum(r) for r in grouped.values()]
 
     def mapBonds(self, l):
         printer()
