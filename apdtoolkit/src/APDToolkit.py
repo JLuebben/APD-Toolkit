@@ -14,6 +14,7 @@ def run(pluginManager):
     from lauescript.laueio.inout import FlexLoad
     from lauescript.laueio.loader import Loader
     from lauescript.types.data import DATA
+    from os.path import isfile
 
     printer = pluginManager.setup()
     data = DATA()
@@ -24,6 +25,10 @@ def run(pluginManager):
     dabapath = pluginManager.get_databasepath()
 
     filename = pluginManager.arg('load')
+    if not isfile(filename):
+        filename = None
+        printer('No file specified. Searching for files in working directory.'
+                '\nTo specify a file use \'load <filename>\'.\n')
     if filename:
         # if filename.endswith('.apd'):
         #     printer('APD-Script file found. Executing script.')
@@ -39,5 +44,5 @@ def run(pluginManager):
         FlexLoad(data, loader, dabapath, pluginManager)
     printer('Loading successful.')
     data.update()
-    for atom in data['exp'].atoms:
-        print atom.get_active_invariom()
+    # for atom in data['exp'].atoms:
+    #     print atom.get_active_invariom()

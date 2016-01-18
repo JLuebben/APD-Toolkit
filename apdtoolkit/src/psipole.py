@@ -31,8 +31,7 @@ class ShelxlMolecule(MoleculeInterface):
             atom.set_sfacs()
         self.set_psipoles()
 
-        # ===============================================================================
-
+    # ===============================================================================
     #         for bond in self.get_bonds(unique=False):
     #
     #             if any([i.get_id()=='O1D' for i in bond]) and any([i.get_id()=='C4E' for i in bond]):

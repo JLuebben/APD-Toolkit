@@ -1,4 +1,4 @@
-Laue-Script Installation Guide
+APD-Toolkit Installation Guide
 
 Windows
 
@@ -7,7 +7,7 @@ Step 1: Install GitShell
 Step 2: Start GitShell and download the APD-Toolkit files with 
 	git clone https://github.com/JLuebben/APD-Toolkit /some/local/path/
 
-Step 3: Setup enviroment variables. To make sure Python knows where the APD-Toolkit files are located /some/local/path/bin must be added to your operating system's PATH enviroment variables.
+Step 3: Setup environment variables. To make sure Python knows where the APD-Toolkit files are located /some/local/path/bin must be added to your operating system's PATH enviroment variables.
 
 Step 4: Test if everything works by opening a terminal and type APDToolkit.
 
