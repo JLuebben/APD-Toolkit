@@ -1,6 +1,6 @@
 
 from os.path import expanduser, isfile, join, realpath, dirname
-from sys import argv
+from sys import argv, exit
 import lauescript.core.pluginmanager as pluginmanager
 
 
