@@ -11,7 +11,8 @@ will get configured to call this plugin automatically.
 """
 
 KEY = 'apd'
-OPTION_ARGUMENTS = {'load': None}
+OPTION_ARGUMENTS = {'load': None,
+                    'temp': None}
 HEADLINE = 'Loading Files and Transfering ADPs'
 
 

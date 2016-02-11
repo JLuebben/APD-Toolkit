@@ -12,8 +12,10 @@ OPTION_ARGUMENTS = {'load': None,
 HEADLINE = ' Using micro mode  '
 BOTTOMLINE = ' Exiting micro mode'
 
+from lauescript.types.data import DATA
 
-def run(config):
+
+def run(pluginManager):
     """
     Called by the plugin manager.
     Asks the plugin manager for user input and
@@ -26,23 +28,27 @@ def run(config):
     from lauescript.laueio.loader import Loader
     from lauescript.core.core import apd_exit
 
-    printer = config.setup()
+    printer = pluginManager.setup()
+    data = DATA()
+    loader = Loader(printer)
+    pluginManager.register_variable(loader, 'loader')
+    pluginManager.register_variable(data, 'data')
     dabapath = '.'
     match = 'geom'
-    if config.arg('generate'):
+    if pluginManager.arg('generate'):
         printer('Generating new micro database.')
         data = GENERATOR([], True)
-        path = config.arg('load')
-        db.generate_micro_database(data, config.get_frequency_cutoff(), path=path,
-                                   printer=printer, clustersize=int(config.arg('cluster')),
-                                   frequency_scale=config.get_config_valueFloat('Database', 'frequency_scale'))
+        path = pluginManager.arg('load')
+        db.generate_micro_database(data, pluginManager.get_frequency_cutoff(), path=path,
+                                   printer=printer, clustersize=int(pluginManager.arg('cluster')),
+                                   frequency_scale=pluginManager.get_config_valueFloat('Database', 'frequency_scale'))
         apd_exit(0)
-    data = config.get_variable()
+    data = pluginManager.get_variable()
     printer('Loading data.')
-    filename = config.arg('load')
+    filename = pluginManager.arg('load')
     printer('Setting ADP transfer mode to pattern matching.\n')
     loader = Loader(printer)
-    config.register_variable(loader, 'loader')
+    pluginManager.register_variable(loader, 'loader')
     if filename:
         if '.apd' in filename:
             printer('APD-Script file found. Executing script.')
@@ -53,9 +59,9 @@ def run(config):
             parser()
             printer.exit()
             exit()
-        FlexLoad(data, loader, dabapath, config, filename)
+        FlexLoad(data, loader, dabapath, pluginManager, filename)
     else:
-        FlexLoad(data, loader, dabapath, config)
+        FlexLoad(data, loader, dabapath, pluginManager)
     printer('Loading successful.')
 
     data.update(match=match)

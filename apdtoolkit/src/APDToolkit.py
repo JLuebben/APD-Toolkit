@@ -2,7 +2,8 @@
 __author__ = ''
 
 KEY = 'APDToolkit'  # Edit this to control which cmd line keyword starts the plugin.
-OPTION_ARGUMENTS = {'load': 'myFile.txt'}  # Edit this to define cmd line options for
+OPTION_ARGUMENTS = {'load': 'myFile.txt',
+                    'temp': None}  # Edit this to define cmd line options for
 # the plugin and their default values.
 from lauescript.core.core import *
 

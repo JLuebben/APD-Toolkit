@@ -42,7 +42,7 @@ To create a file (out.res' with estimated H-APDs by automatic segmented rigid bo
   >>>   APDToolkit load <fileName> -A -W write out.res   <<<
         """
         exit()
-    if not '-D' in argv:
+    if not '-D' in argv and not '-micro' in argv:
         argvs=argv[0:1]+['-APDToolkit']+argv[1:]
     else:
         argvs = argv
