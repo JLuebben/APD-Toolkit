@@ -256,23 +256,6 @@ def apply_tls(Utls, indexlist=None, srb=False):
 
     if srb:
         pass
-        # ===============================================================================
-    #     for i in xrange(len(Utls)/6):
-    #         data['exp'].atoms[i].adp['cart_ext']=Utls[i*6:i*6+6]
-    #         data['exp'].atoms[i].adp['cart_sum']=data['exp'].atoms[i].adp['cart_int']\
-    #                                        +data['exp'].atoms[i].adp['cart_ext']
-    #
-    #
-    #         data['exp'].atoms[i].adp['frac_ext']=cg.rotate_adp3(data['exp']\
-    #                                     .atoms[i].adp['cart_ext'],\
-    #                                     data['exp'].cart2fracmatrix,\
-    #                                     data['exp'].cell)
-    #
-    #         data['exp'].atoms[i].adp['frac_sum']=cg.rotate_adp3(data['exp']\
-    #                                     .atoms[i].adp['cart_sum'],\
-    #                                     data['exp'].cart2fracmatrix,\
-    #                                     data['exp'].cell)
-    #===============================================================================
 
     for i, atom in enumerate(fitted_atoms):
         if atom.get_element() == 'H':
@@ -363,7 +346,7 @@ def get_user_input(srb):
     #     from autosegment import get_tls_definition_auto
     #     return get_tls_definition_auto()
     #===========================================================================
-    from autosegment2 import get_tls_definition_auto
+    from autosegment import get_tls_definition_auto
 
     return get_tls_definition_auto()
 

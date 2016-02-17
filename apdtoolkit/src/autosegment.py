@@ -7,11 +7,18 @@ Plugin for automatically segementing a rigid molecule
 body into attached rigid groups.
 """
 
-KEY = 'Aold'
+KEY = 'A'
+OPTIONS = ['noforce']
+NAME = 'Auto'
 
 import numpy as np
 
 import lauescript.cryst.crystgeom as cg
+from lauescript.cryst.iterators import iter_riding_hydrogen_atoms
+
+MIMIMUM_SIZE = 4
+MIMIMUM_SIZE = 5
+MIMIMUM_SIZE = 8
 
 
 def autosegment():
@@ -111,19 +118,39 @@ def start_fit(groups):
         axis /= np.linalg.norm(axis)
         tls_definitions.append((axis, group[0], group[1]))
 
-    if len(tls_definitions) > 0:
-        options = {'options': ['auto', 'oneunit']}
-        config.call('T2', options)
-    else:
-        options = {'options': ['oneunit']}
-        config.call('T2', options)
+    for i, mol in enumerate(data['exp'].get_all_chem_molecules()):
+        global current_molecule
+        current_molecule = mol
+
+        if len([a for a in mol if not a.get_element() == 'H']) > 4:
+            rigid = True
+            for definition in tls_definitions:
+                if any([atom in mol for atom in definition[1:]]):
+                    rigid = False
+                    options = {'options': ['auto'], 'molecule': ['{}'.format(i + 1)]}
+                    config.call('T2', options)
+                    break
+            if rigid:
+                options = {'options': [], 'molecule': ['{}'.format(i + 1)]}
+                config.call('T2', options)
+
+        else:
+            for atom in mol:
+                if not atom.element == 'H':
+                    ext = atom.adp['cart_meas'] - atom.adp['cart_int']
+                    for hAtom in iter_riding_hydrogen_atoms(atom):
+                        hAtom.adp['cart_ext'] = ext
+                        hAtom.adp['cart_sum'] = ext + hAtom.adp['cart_int']
+                        hAtom.updated()
+                    atom.adp['cart_sum'] = atom.adp['cart_meas']
+                    atom.updated()
 
 
 def get_tls_definition_auto():
     """
     Interface function for the TLS-Fitting module.
     """
-    return tls_definitions
+    return [definition for definition in tls_definitions if any(atom in current_molecule for atom in definition[1:])]
 
 
 def get_potential_axis(matrix):
@@ -216,10 +243,10 @@ def check_rigidity(group, matrix):
     in comparison with the rest of the molecule. Also, groups
     too small for TLS-Analysis are deleted.
     """
-    if len(group) < 4:
+    if len(group) < MIMIMUM_SIZE:
         printer('\nKill too small group: ', [i.name for i in group])
         return 999
-    if len(data['exp'].atoms) - len(group) < 4:
+    if len(data['exp'].atoms) - len(group) < MIMIMUM_SIZE:
         printer('\nKill too small group: ', [i.name for i in group])
         return 999
 
@@ -227,32 +254,46 @@ def check_rigidity(group, matrix):
     rigidsum = 0
     nonrigidcounter = 0
     nonrigidsum = 0
+    #===========================================================================
+    # print matrix
+    # exit()
+    #===========================================================================
     for atom in group:
         i = data['exp'].atoms.index(atom)
         deltaline = matrix[i]
         for atom2 in group:
             if not atom == atom2:
+                #===============================================================
+                # print
+                # print atom,atom2
+                # print deltaline
+                #===============================================================
                 j = data['exp'].atoms.index(atom2)
                 delta = deltaline[j]
+                #===============================================================
+                # print delta
+                #===============================================================
                 rigidsum += delta
                 rigidcounter += 1
-
-        for atom2 in data['exp'].atoms:
-            if not atom2 in group:
-                j = data['exp'].atoms.index(atom2)
-                delta = deltaline[j]
-                try:
-                    nonrigidsum += delta
-                    nonrigidcounter += 1
-                except:
-                    # ===========================================================
-                    # Ignore values of non anisotropic ADP.
-                    #===========================================================
-                    pass
+    #===========================================================================
+    # exit()
+    #===========================================================================
+    for atom2 in data['exp'].atoms:
+        if not atom2 in group:
+            j = data['exp'].atoms.index(atom2)
+            delta = deltaline[j]
+            try:
+                nonrigidsum += delta
+                nonrigidcounter += 1
+            except:
+                #===========================================================
+                # Ignore values of non anisotropic ADP.
+                #===========================================================
+                pass
 
     rigidval = rigidsum / rigidcounter
     nonrigidval = nonrigidsum / nonrigidcounter
-    val = rigidval ** 2 - nonrigidval
+    val = rigidval * 2 - nonrigidval
     printer('\nChecking group:', [i.name for i in group])
     printer('Average Delta z^2 for atoms within the rigid group: {}'.format(rigidval))
     printer('Average Delta z^2 for atoms not within the rigid group: {}'.format(nonrigidval))

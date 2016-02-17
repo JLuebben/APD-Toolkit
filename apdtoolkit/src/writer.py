@@ -52,7 +52,7 @@ def provide():
     printer = config.get_active_printer()
     printer('Using {} for H-ADPs'.format(use[-3:]))
     data = config.get_variable()
-    onlyH =  config.arg('H')
+    onlyH = config.arg('H')
     for atom in data['exp'].atoms:
         if atom.is_updated() or not atom.get_element() == 'H':
             if not atom.get_element() == 'H' and onlyH:
