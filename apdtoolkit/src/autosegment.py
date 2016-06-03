@@ -160,7 +160,10 @@ def get_potential_axis(matrix):
     namelist = []
     axislist = []
     for atom in data['exp'].atoms:
-        atomtypes = parse_inv_name(atom.invariom_name)
+        try:
+            atomtypes = parse_inv_name(atom.invariom_name)
+        except TypeError:
+            atomtypes = []
         frame_atoms = cg.get_framework_neighbours(atom)
         if len(atomtypes) > 1:
             for atom2 in frame_atoms:
