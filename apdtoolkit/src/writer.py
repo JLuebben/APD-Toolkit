@@ -8,6 +8,8 @@ Plugin for writing the results of the ADP transfer to a file.
 The file format depends on the format used as input.
 """
 
+from lauescript.types.adp import ADPDataError
+
 KEY = 'W'
 OPTION_ARGUMENTS = {'write': 'apd',
                     'use': 'cart_sum'}
@@ -61,7 +63,13 @@ def provide():
             afix = ''
             if atom.get_element() == 'H':
                 afix = 'AFIX 2'
-            yield atom.name, atom.cart, atom.adp[use], afix
+            try:
+                adp = atom.adp[use]
+            except ADPDataError:
+                printer('Warning: No estimated ADP available for atom {}'.format(atom.get_name()))
+                printer('Using measured ADP instead.')
+                adp = atom.adp['cart_meas']
+            yield atom.name, atom.cart, adp, afix
             continue
 
         else:
