@@ -13,6 +13,7 @@ HEADLINE = ' Using micro mode  '
 BOTTOMLINE = ' Exiting micro mode'
 
 from lauescript.types.data import DATA
+from lauescript.core.core import quickLoad
 
 
 def run(pluginManager):
@@ -59,9 +60,10 @@ def run(pluginManager):
             parser()
             printer.exit()
             exit()
-        FlexLoad(data, loader, dabapath, pluginManager, filename)
+        FlexLoad(data, loader, dabapath, pluginManager, filename, noTransfer=True)
+        # data['exp'] = quickLoad(pluginManager, filename)
     else:
-        FlexLoad(data, loader, dabapath, pluginManager)
+        FlexLoad(data, loader, dabapath, pluginManager, noTransfer=True)
+        # data['exp'] = quickLoad(pluginManager, filename)
     printer('Loading successful.')
-
     data.update(match=match)
