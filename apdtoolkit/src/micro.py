@@ -8,12 +8,13 @@ calculation.
 """
 KEY = 'micro'
 OPTION_ARGUMENTS = {'load': None,
-                    'cluster': 15}
+                    'cluster': 15,
+                    'match': 'geom'}
 HEADLINE = ' Using micro mode  '
 BOTTOMLINE = ' Exiting micro mode'
 
 from lauescript.types.data import DATA
-from lauescript.core.core import quickLoad
+from lauescript.core.core import quickLoad, apd_exit
 
 
 def run(pluginManager):
@@ -35,7 +36,7 @@ def run(pluginManager):
     pluginManager.register_variable(loader, 'loader')
     pluginManager.register_variable(data, 'data')
     dabapath = '.'
-    match = 'geom'
+    match = pluginManager.arg('match')
     if pluginManager.arg('generate'):
         printer('Generating new micro database.')
         data = GENERATOR([], True)
@@ -59,11 +60,13 @@ def run(pluginManager):
             printer.enter()
             parser()
             printer.exit()
-            exit()
+            apd_exit()
         FlexLoad(data, loader, dabapath, pluginManager, filename, noTransfer=True)
         # data['exp'] = quickLoad(pluginManager, filename)
     else:
         FlexLoad(data, loader, dabapath, pluginManager, noTransfer=True)
         # data['exp'] = quickLoad(pluginManager, filename)
     printer('Loading successful.')
+    printer.spacer()
+    printer('\nUsing option {} to transfer ADPs.'.format(match))
     data.update(match=match)
