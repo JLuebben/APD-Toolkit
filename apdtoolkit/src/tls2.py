@@ -10,13 +10,15 @@ S_33 is arbitrarily to zero.
 """
 
 KEY = 'T2'
-OPTION_ARGUMENTS = {'molecule': 0}
+OPTION_ARGUMENTS = {'molecule': 0, 'data': 'exp'}
 OPTIONS = ['correlate']
 NAME = 'TLS'
 
 import numpy as np
 import lauescript.cryst.crystgeom as cg
 from math import copysign
+
+TLS=None
 
 
 def buildLSMatrix(data, useH=False):
@@ -32,7 +34,7 @@ def buildLSMatrix(data, useH=False):
     A = []
     if molID >= 0 and not useH:
         printer('\nPerforming rigid body fit for molecule with ID: {}'.format(molID))
-    for atom in data['exp'].get_chem_molecule(molID):
+    for atom in data[useData].get_chem_molecule(molID):
         if not useH:
             fitted_atoms.append(atom)
         if not atom.name[0] == 'H' or useH:
@@ -55,11 +57,12 @@ def buildLSMatrix(data, useH=False):
                 A.append(np.array([0, 0, 0, 0, 0, 1,   -x2 * x3,        0, 0       , x1 * x3     , x1 * x2      , -x1 * x1    ,      0, -x1, x1 , x2     , -x3   , 0     , 0      , 0       , 0     ]))
 
                 adplist_sum = atom.adp['cart_meas']
-                adplist_int = atom.adp['cart_int']
+                # adplist_int = atom.adp['cart_int']
                 adplist = []
                 if atom.adp['cart_meas'] is not None:
                     for m in xrange(len(adplist_sum)):
                         if uncorrelate:
+                            adplist_int = atom.adp['cart_int']
                             adplist.append(adplist_sum[m] - adplist_int[m])
                         else:
                             adplist.append(adplist_sum[m])
@@ -94,7 +97,7 @@ def buildLSMatrix_SRB(data, rigid_groups, rigid_namess, axiss, useH=False):
     if molID >= 0 and not useH:
         printer('\nPerforming rigid body fit for molecule with ID: {}'.format(molID))
 
-    for atom in data['exp'].get_chem_molecule(molID):
+    for atom in data[useData].get_chem_molecule(molID):
         if not useH:
             fitted_atoms.append(atom)
         if not atom.name[0] == 'H' or useH:
@@ -213,6 +216,8 @@ def fit_tls(data, srb):
 
     v = np.linalg.lstsq(A, y)
     v = v[0]
+    global TLS
+    TLS = v
 
     rest = np.array(v[21:])
     R = []
@@ -264,12 +269,12 @@ def apply_tls(Utls, indexlist=None, srb=False):
             atom.adp['cart_sum'] = atom.adp['cart_int'] + atom.adp['cart_ext']
 
             atom.adp['frac_ext'] = cg.rotate_adp3(atom.adp['cart_ext'],
-                                                  data['exp'].cart2fracmatrix,
-                                                  data['exp'].cell)
+                                                  data[useData].cart2fracmatrix,
+                                                  data[useData].cell)
 
             atom.adp['frac_sum'] = cg.rotate_adp3(atom.adp['cart_sum'],
-                                                  data['exp'].cart2fracmatrix,
-                                                  data['exp'].cell)
+                                                  data[useData].cart2fracmatrix,
+                                                  data[useData].cell)
             atom.updated()
         else:
             atom.adp['cart_sum'] = atom.adp['cart_meas']
@@ -360,8 +365,9 @@ def run(configurator, srb=None, **kwargs):
     body model is applied.
     """
 
-    global indent, printer, uncorrelate, mo, molID, fitted_atoms
+    global indent, printer, uncorrelate, mo, molID, fitted_atoms, useData
     printer = configurator.setup()
+    useData = configurator.arg('data')
     molID = int(configurator.arg('molecule'))
     if molID is False:
         molID = -1
@@ -382,5 +388,7 @@ def run(configurator, srb=None, **kwargs):
         uncorrelate = True
 
     fit_tls(data, srb)
+    global TLS
+    configurator.set_variable(TLS, 'TLS')
     return True
 
