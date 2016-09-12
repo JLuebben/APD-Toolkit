@@ -20,8 +20,8 @@ from lauescript.cryst.crystgeom import rotate_adp3
 
 def run(pluginManager):
     data = pluginManager.get_variable('data')
-    useData = pluginManager.arg('data')
     printer = pluginManager.setup()
+    useData = pluginManager.arg('data')
     dabapa = './APD_DABA_{:.1f}_.txt'.format(data.temperature)
     database = open(dabapa, 'r').readlines()
     read_database(data, database, invlist=[], readAll=True)

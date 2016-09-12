@@ -10,7 +10,8 @@ S_33 is arbitrarily to zero.
 """
 
 KEY = 'T2'
-OPTION_ARGUMENTS = {'molecule': 0, 'data': 'exp'}
+OPTION_ARGUMENTS = {'molecule': 0,
+                    'data': 'exp'}
 OPTIONS = ['correlate']
 NAME = 'TLS'
 

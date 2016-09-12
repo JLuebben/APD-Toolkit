@@ -127,11 +127,11 @@ def start_fit(groups):
             for definition in tls_definitions:
                 if any([atom in mol for atom in definition[1:]]):
                     rigid = False
-                    options = {'options': ['auto'], 'molecule': ['{}'.format(i + 1)]}
+                    options = {'options': ['auto'], 'molecule': ['{}'.format(i + 1)], 'data': ['exp']}
                     config.call('T2', options)
                     break
             if rigid:
-                options = {'options': [], 'molecule': ['{}'.format(i + 1)]}
+                options = {'options': [], 'molecule': ['{}'.format(i + 1)], 'data': ['exp']}
                 config.call('T2', options)
 
         else:
