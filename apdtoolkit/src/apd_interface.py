@@ -12,7 +12,8 @@ will get configured to call this plugin automatically.
 
 KEY = 'apd'
 OPTION_ARGUMENTS = {'load': None,
-                    'temp': None}
+                    'temp': None,
+                    'planarity': .1}
 HEADLINE = 'Loading Files and Transfering ADPs'
 
 
@@ -25,6 +26,7 @@ def run(config):
     from lauescript.laueio.loader import Loader
 
     printer = config.setup()
+    planarityThreshold = float(config.arg('planarity'))
     data = config.get_variable()
     loader = Loader(printer)
     config.register_variable(loader, 'loader')
@@ -32,6 +34,7 @@ def run(config):
     dabapath = config.get_databasepath()
 
     filename = config.arg('load')
+
     if filename:
         if filename.endswith('.apd'):
             printer('APD-Script file found. Executing script.')
@@ -42,8 +45,8 @@ def run(config):
             parser()
             printer.exit()
             exit()
-        FlexLoad(data, loader, dabapath, config, filename)
+        FlexLoad(data, loader, dabapath, config, filename, planarityThreshold=planarityThreshold)
     else:
-        FlexLoad(data, loader, dabapath, config)
+        FlexLoad(data, loader, dabapath, config, planarityThreshold=planarityThreshold)
     printer('Loading successful.')
     data.update()

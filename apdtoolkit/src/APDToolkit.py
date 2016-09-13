@@ -3,7 +3,8 @@ __author__ = ''
 
 KEY = 'APDToolkit'  # Edit this to control which cmd line keyword starts the plugin.
 OPTION_ARGUMENTS = {'load': 'myFile.txt',
-                    'temp': None}  # Edit this to define cmd line options for
+                    'temp': None,
+                    'planarity': .1}  # Edit this to define cmd line options for
 # the plugin and their default values.
 from lauescript.core.core import *
 
@@ -22,6 +23,7 @@ def run(pluginManager):
     loader = Loader(printer)
     pluginManager.register_variable(loader, 'loader')
     pluginManager.register_variable(data, 'data')
+    planarityThreshold = float(pluginManager.arg('planarity'))
     # data.register_pluginManager(pluginManager)
     dabapath = pluginManager.get_databasepath()
 
@@ -40,9 +42,9 @@ def run(pluginManager):
         #     parser()
         #     printer.exit()
         #     exit()
-        FlexLoad(data, loader, dabapath, pluginManager, filename)
+        FlexLoad(data, loader, dabapath, pluginManager, filename, planarityThreshold=planarityThreshold)
     else:
-        FlexLoad(data, loader, dabapath, pluginManager)
+        FlexLoad(data, loader, dabapath, pluginManager, planarityThreshold=planarityThreshold)
     printer('Loading successful.')
     data.update()
     # for atom in data['exp'].atoms:
