@@ -39,6 +39,7 @@ BEEF = (e_1 + cos_2 * e_2 + cos_3 * e_3) * w
 
 A structure model should have a BEEF of about 0.02 to 0.05.
 """
+from __future__ import print_function
 __author__ = 'jens'
 
 from numpy.linalg import eig, norm
@@ -137,7 +138,7 @@ class Analyser(object):
         Method for printing an overview to the cmd line.
         :return:
         """
-        print self.results
+        print(self.results)
 
 
 class Result(object):
@@ -148,7 +149,7 @@ class Result(object):
     def __init__(self, bondvector, relativemass, evalues, evectors):
         self.results = []
         self.value = None
-        for i in xrange(3):
+        for i in range(3):
             vector = evectors[:, i]
             evalue = evalues[i]
             cangle = abs(dot(bondvector, vector).flatten().tolist()[0][0])

@@ -8,6 +8,7 @@ model with Shelxl.
 
 WORK IN PROGRESS!
 """
+from __future__ import print_function
 KEY = 'Psi'
 OPTION_ARGUMENTS = {'load': None}
 
@@ -77,7 +78,7 @@ class ShelxlMolecule(MoleculeInterface):
             # print pluspos,minuspos
             #===================================================================
         self.build()
-        print self.iop
+        print(self.iop)
         self.write()
 
 
@@ -134,7 +135,7 @@ class PsipoleAtom(ShelxlAtom):
         """
         For testing purposes.
         """
-        print 'x'
+        print('x')
 
     def set_sfacs(self):
         """

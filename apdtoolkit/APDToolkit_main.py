@@ -11,9 +11,9 @@ def main():
     After configuration the plugin manager is executed.
     """
     if 'help' in argv:
-        print '\n\n########################################################################################\n'              '#                                       APDToolkit                                     #\n'              '########################################################################################\n'
-        print 'A program for estimating hydrogen ADPs from the Invariom databse.'
-        print """
+        print('\n\n########################################################################################\n'              '#                                       APDToolkit                                     #\n'              '########################################################################################\n')
+        print('A program for estimating hydrogen ADPs from the Invariom databse.')
+        print("""
 Usage:
 Plugins are called by using '-' as a prefix for the plugin KEY. e.g.: the Write plugin has the KEY 'W' and can
 be started with '-W'. The execution order of plugins is the same as the order of statements on the cmd line.
@@ -40,7 +40,7 @@ Plugins are located as specified in '~/.APDToolkit.ini'
 
 To create a file (out.res' with estimated H-APDs by automatic segmented rigid body analysis use
   >>>   APDToolkit load <fileName> -A -W write out.res   <<<
-        """
+        """)
         exit()
     if not '-D' in argv and not '-micro' in argv:
         argvs=argv[0:1]+['-APDToolkit']+argv[1:]

@@ -26,6 +26,8 @@ def run(pluginManager):
     planarityThreshold = float(pluginManager.arg('planarity'))
     # data.register_pluginManager(pluginManager)
     dabapath = pluginManager.get_databasepath()
+    # print(pluginManager.arg('temp'))
+    # print(pluginManager.arg('load'))
 
     filename = pluginManager.arg('load')
     if not isfile(filename):

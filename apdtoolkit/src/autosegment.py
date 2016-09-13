@@ -36,7 +36,7 @@ def autosegment():
     except:
         printer('\nNo hirshfeld test data found. Calling hirshfeld'
                 ' test module.')
-        options = {'options': ['full']}
+        options = {'full': True}
         config.call('H', options)
         matrix = data['exp'].hirshfeld_matrix
         hirshfeld_list = data['exp'].hirshfeld_list
@@ -79,7 +79,7 @@ def set_threshold(hirshfeld_list, matrix):
     #     #     printer( line)
     #     #===========================================================================
     #
-    #     norid_values=[j[i] for j in matrix for i in xrange(len(matrix[0])) if  j[i] > 1]
+    #     norid_values=[j[i] for j in matrix for i in range(len(matrix[0])) if  j[i] > 1]
     #     norid_values.remove(max(norid_values))
     #     norid_values.remove(min(norid_values))
     #
@@ -127,11 +127,11 @@ def start_fit(groups):
             for definition in tls_definitions:
                 if any([atom in mol for atom in definition[1:]]):
                     rigid = False
-                    options = {'options': ['auto'], 'molecule': ['{}'.format(i + 1)], 'data': ['exp']}
+                    options = {'auto': True, 'molecule': '{}'.format(i + 1), 'data': 'exp'}
                     config.call('T2', options)
                     break
             if rigid:
-                options = {'options': [], 'molecule': ['{}'.format(i + 1)], 'data': ['exp']}
+                options = {'molecule': '{}'.format(i + 1), 'data': 'exp'}
                 config.call('T2', options)
 
         else:
@@ -196,7 +196,7 @@ def generate_rigid_groups(axislist, matrix):
         vals.append(check_rigidity(group, matrix))
     accepted_groups = []
     printer('\n')
-    for _ in xrange(len(vals)):
+    for _ in range(len(vals)):
         bestgroup = min(vals)
         if bestgroup > RIGIDITY_THRESHOLD:
             if len(accepted_groups) == 0:

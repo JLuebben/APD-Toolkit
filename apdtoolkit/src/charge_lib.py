@@ -1,3 +1,4 @@
+from __future__ import print_function
 def check_charge( charged, printer ):
 
     "Checks if user declared the molecule as charged by typing charged somewhere behind the plugin call If so the user is prompted to supply the charge. And reading it in"
@@ -53,9 +54,9 @@ def build_resp_arrays( atom, resp_arrays, chargedict, average_charges):
                         resp = chargedict[atom.invarioms.keys()[2]]
                         resp_arrays[atom.molecule_id].append(resp)
                         atom.set_active_invariom(atom.invarioms.keys()[2])
-                    else: print 'PROBLEM: Found no match for invarioms,', atom.invarioms.keys()[0], atom.invarioms.keys()[1], atom.invarioms.keys()[2], ' of atom ', atom.name, "in charge database."
-                else: print 'PROBLEM: Found no match for invarioms ', atom.invarioms.keys()[0],atom.invarioms.keys()[1],' of atom ', atom.name, "in charge database."
-        else: print'PROBLEM: FOUND no match for invariom of atom ', atom.invarioms.keys()[0], "in charge database."
+                    else: print('PROBLEM: Found no match for invarioms,', atom.invarioms.keys()[0], atom.invarioms.keys()[1], atom.invarioms.keys()[2], ' of atom ', atom.name, "in charge database.")
+                else: print('PROBLEM: Found no match for invarioms ', atom.invarioms.keys()[0],atom.invarioms.keys()[1],' of atom ', atom.name, "in charge database.")
+        else: print('PROBLEM: FOUND no match for invariom of atom ', atom.invarioms.keys()[0], "in charge database.")
     #--------- end of alternative invarioms block
     currentsum=average_charges[atom.molecule_id]
     average_charges[atom.molecule_id]=currentsum+((resp*resp)**(0.5))

@@ -35,6 +35,7 @@ function which returns:
       calls the 'enter(), headline(), bottomline()
       and exit()' methods.
 '''
+from __future__ import print_function
 KEY = 'realresp'
 OPTION_ARGUMENTS = ['']
 
@@ -78,7 +79,7 @@ def run(conf):
     ### -------------------------------------
     ### -------------------------------------
     ###  Setting monopole populations
-    print '\natom elec val_elec invariom resp_charge monop_pop\n'
+    print('\natom elec val_elec invariom resp_charge monop_pop\n')
     i = 0
     numb = 0 #fuer Atomnummer im label
     zero_list = [0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000,
@@ -100,7 +101,7 @@ def run(conf):
             val_num = (el_num - 2) % 8
         monopole_pop = val_num - resp
 
-        print atom.name, electron_number[atom.element], val_num, numb, resp, monopole_pop
+        print(atom.name, electron_number[atom.element], val_num, numb, resp, monopole_pop)
         j = 0
         for atomdata in writer.provide(['multipoles']):
             j += 1

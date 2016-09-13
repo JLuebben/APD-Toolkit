@@ -6,8 +6,11 @@ Created on May 16, 2014
 Plugin for analysing the results of a cross validation.
 Designed for macro molecules.
 """
-
-import cPickle
+from __future__ import print_function
+try:
+    import cPickle
+except ImportError:
+    import pickle as cPickle
 import glob
 import os
 
@@ -148,7 +151,7 @@ class Accumulator_Atom(PDBAtom):
         self.d += d
         self.dd += d ** 2
         if self.name == 'O4_323_HOH_ _30':
-            print self.center,d
+            print(self.center,d)
 
     def get_error_dist(self):
         """
