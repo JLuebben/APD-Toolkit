@@ -39,7 +39,7 @@ def run(pluginManager):
         printer(str(atom))
     data['pseudo'] = periphery
     printer('\nGenerating rigid body vibration description via TLS fit against\nPseudo Molecule.')
-    options = {'options': ['correlate'], 'data': ['pseudo']}
+    options = {'correlate': True, 'data': 'pseudo'}
     pluginManager.call('T2', options)
     TLS = pluginManager.get_variable('TLS')
 
