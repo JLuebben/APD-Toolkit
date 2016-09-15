@@ -21,7 +21,7 @@ from lauescript.laueio.xd_iop import XDIOP
 from lauescript.cryst.transformations import cart2frac
 
 KEY = 'applyhdist'
-OPTION_ARGUMENTS = ['write']
+OPTION_ARGUMENTS = {'write': ''}
 
 
 def run(pluginManager):

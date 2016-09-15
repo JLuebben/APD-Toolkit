@@ -37,7 +37,7 @@ function which returns:
 '''
 from __future__ import print_function
 KEY = 'realresp'
-OPTION_ARGUMENTS = ['']
+OPTION_ARGUMENTS = {}
 
 
 def run(conf):

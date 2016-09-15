@@ -36,7 +36,7 @@ function which returns:
       and exit()' methods.
 '''
 KEY = 'pqr'
-OPTION_ARGUMENTS = ['neutral']
+OPTION_ARGUMENTS = {'neutral': ''}
 
 
 def run(conf):
