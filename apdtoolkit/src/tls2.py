@@ -264,7 +264,7 @@ def apply_tls(Utls, indexlist=None, srb=False):
         pass
 
     for i, atom in enumerate(fitted_atoms):
-        if atom.get_element() == 'H':
+        if not atom.get_element() == 'HHHH':
             atom.adp['cart_ext'] = Utls[i * 6:i * 6 + 6]
 
             atom.adp['cart_sum'] = atom.adp['cart_int'] + atom.adp['cart_ext']

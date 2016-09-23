@@ -54,12 +54,16 @@ def provide():
     printer = config.get_active_printer()
     printer('Using {} for H-ADPs'.format(use[-3:]))
     data = config.get_variable()
-    onlyH = config.arg('H')
+    allA = config.arg('all')
     for atom in data['exp'].atoms:
         if atom.is_updated() or not atom.get_element() == 'H':
-            if not atom.get_element() == 'H' and onlyH:
-                yield atom.name, atom.cart, atom.adp['cart_meas'], ''
-                continue
+            if not atom.get_element() == 'H':
+                if allA:
+                    yield atom.name, atom.cart, atom.adp[use], ''
+                    continue
+                else:
+                    yield atom.name, atom.cart, atom.adp['cart_meas'], ''
+                    continue
             afix = ''
             if atom.get_element() == 'H':
                 afix = 'AFIX 2'
