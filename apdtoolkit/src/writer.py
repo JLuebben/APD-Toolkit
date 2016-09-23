@@ -68,7 +68,7 @@ def provide():
             else:
                 yield atom.name, atom.cart, atom.adp[use], afix
                 continue
-        yield atom.name, atom.cart, atom.adp['cart_meas'], afix
+        yield atom.name, atom.cart, atom.adp['cart_meas'], ''
         continue
 
         if atom.is_updated() or not atom.get_element() == 'H':
