@@ -37,13 +37,15 @@ def build_ls_matrices(data):
     printer('Scaling \'{}\' from \'exp\' model to\n\'cart_meas\' of target model.\n'.format(use[0]))
 
 
-
     y = []
     A = []
     for atom in data['exp'].atoms:
         if not atom.name[0] == 'H':
             name = atom.name.replace('(', '').replace(')', '')
-            adpN = mol[name].adp['cart_meas']
+            try:
+                adpN = mol[name].adp['cart_meas']
+            except AttributeError:
+                adpN = mol[atom.name].adp['cart_meas']
             adpX = atom.adp[use[0]]
 
             A.append(np.array([adpX[0], 1, 0, 0, 0, 0, 0]))
