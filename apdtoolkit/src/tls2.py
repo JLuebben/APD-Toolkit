@@ -17,6 +17,7 @@ NAME = 'TLS'
 
 import numpy as np
 import lauescript.cryst.crystgeom as cg
+from lauescript.types.adp import ADPDataError
 from math import copysign
 
 TLS=None
@@ -264,7 +265,7 @@ def apply_tls(Utls, indexlist=None, srb=False):
         pass
 
     for i, atom in enumerate(fitted_atoms):
-        if not atom.get_element() == 'HHHH':
+        try:
             atom.adp['cart_ext'] = Utls[i * 6:i * 6 + 6]
 
             atom.adp['cart_sum'] = atom.adp['cart_int'] + atom.adp['cart_ext']
@@ -277,7 +278,7 @@ def apply_tls(Utls, indexlist=None, srb=False):
                                                   data[useData].cart2fracmatrix,
                                                   data[useData].cell)
             atom.updated()
-        else:
+        except ADPDataError:
             atom.adp['cart_sum'] = atom.adp['cart_meas']
             atom.adp['cart_ext'] = Utls[i * 6:i * 6 + 6]
             atom.updated()
