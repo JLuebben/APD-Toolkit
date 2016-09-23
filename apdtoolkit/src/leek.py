@@ -51,7 +51,7 @@ def run(pluginManager):
                                                   atom.molecule.cell)
         atom.adp['cart_sum'] = atom.adp['cart_int'] + atom.adp['cart_ext']
         atom.adp['frac_sum'] = atom.adp['frac_int'] + atom.adp['frac_ext']
-
+        atom.updated()
 
 
 def generateADP(atom, TLS):
