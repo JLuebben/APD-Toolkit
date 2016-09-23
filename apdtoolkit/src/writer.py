@@ -57,6 +57,20 @@ def provide():
     data = config.get_variable()
     allA = config.arg('all')
     for atom in data[config.arg('data')].atoms:
+        if atom.is_updated():
+            afix = ''
+            if atom.get_element() == 'H':
+                afix = 'AFIX 2'
+
+            if not atom.get_element() == 'H' and not allA:
+                yield atom.name, atom.cart, atom.adp['cart_meas'], afix
+                continue
+            else:
+                yield atom.name, atom.cart, atom.adp[use], afix
+                continue
+        yield atom.name, atom.cart, atom.adp['cart_meas'], afix
+        continue
+
         if atom.is_updated() or not atom.get_element() == 'H':
             if not atom.get_element() == 'H':
                 if allA:
