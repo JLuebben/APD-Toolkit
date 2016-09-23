@@ -12,7 +12,8 @@ from lauescript.types.adp import ADPDataError
 
 KEY = 'W'
 OPTION_ARGUMENTS = {'write': 'apd',
-                    'use': 'cart_sum'}
+                    'use': 'cart_sum',
+                    'data': 'exp'}
 
 
 def run(conf):
@@ -55,7 +56,7 @@ def provide():
     printer('Using {} for H-ADPs'.format(use[-3:]))
     data = config.get_variable()
     allA = config.arg('all')
-    for atom in data['exp'].atoms:
+    for atom in data[config.arg('data')].atoms:
         if atom.is_updated() or not atom.get_element() == 'H':
             if not atom.get_element() == 'H':
                 if allA:
