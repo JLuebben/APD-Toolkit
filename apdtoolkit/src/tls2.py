@@ -96,21 +96,23 @@ def buildLSMatrix_SRB(data, rigid_groups, rigid_namess, axiss, useH=False):
     num_groups = len(axiss)
     indexlist = []
 
+
     if molID >= 0 and not useH:
         printer('\nPerforming rigid body fit for molecule with ID: {}'.format(molID))
 
     for atom in data[useData].get_chem_molecule(molID):
         if not useH:
+            #Keep track of atoms used to build the matrix.
             fitted_atoms.append(atom)
         if not atom.name[0] == 'H' or useH:
             if atom.adp['cart_meas'] is not None or useH:
+                #Create temp. variables for quick coordinate access.
                 xlist = atom.cart.tolist()
-
                 x1 = (xlist[0])
                 x2 = (xlist[1])
                 x3 = (xlist[2])
 
-
+                #Compute V which is required for ARGs.
                 V = []
                 for g in range(num_groups):
                     V.append(np.cross(axiss[g], atom.cart - rigid_groups[g][0].cart))
@@ -183,9 +185,12 @@ def buildLSMatrix_SRB(data, rigid_groups, rigid_namess, axiss, useH=False):
                         row2 = [V[g][1] * V[g][2], x2 * V[g][1] - x3 * V[g][2], -x1 * V[g][1], x1 * V[g][2], 0, V[g][2],
                                 V[g][1]]
                         row = row + row2
+                #Add row to LS matrix.
                 A.append(np.array(row))
+                #Store the index of the current atom in a list to keep track which atoms are represented in the LS matrix.
                 indexlist.append(len(A) - 1)
 
+                #Store the data points the LS parameters should reproduce in a list. These are the experimentally determined ADPs.
                 if not useH:
                     adplist_sum = atom.adp['cart_meas']
                     adplist_int = atom.adp['cart_int']
@@ -210,28 +215,38 @@ def fit_tls(data, srb):
     The current version overwrites the internal ADP of heavy atoms
     by the difference of the external and measured ADP.
     """
+
+    #Build LS matrices for the default case and the Segmented Rigid Body (srb) case.
     if srb:
         rigid_groups, rigid_namess, axiss = segment(srb)
         A, y, _ = buildLSMatrix_SRB(data, rigid_groups, rigid_namess, axiss)
     else:
         A, y = buildLSMatrix(data)
 
+    #Solve the least-squares problem. The solution is the first element returned by lstsq().
     v = np.linalg.lstsq(A, y)
     v = v[0]
     global TLS
     TLS = v
 
+    #The T,L and S parameters correspond to the first 21 parameterers in the optimized parameter list.
+    #The other elements are groups of seven parameters each, representing attached rigid groups.
     rest = np.array(v[21:])
     R = []
+    #Bundle ARG parameters.
     for g in range(len(rest) // 7):
         R.append([v[20 + 1 + g * 7], v[20 + 2 + g * 7], v[20 + 3 + g * 7], v[20 + 4 + g * 7], v[20 + 5 + g * 7],
                   v[20 + 6 + g * 7]])
     indexlist = None
+
+    #Rebuild the LS matrix including hydrogen atoms.
     if srb:
         A, y, indexlist = buildLSMatrix_SRB(data, rigid_groups, rigid_namess, axiss, useH=True)
     else:
         A, y = buildLSMatrix(data, useH=True)
+    #Multiply LS matrix with LS solution to get U_TLS.
     Utls = np.dot(A, v)
+
 
     printer('\nFitted TLS parameters:\n')
     printer('    | {T[0]:+4.2e}  {T[3]:+4.2e}  {T[4]:+4.2e} |'
@@ -252,6 +267,7 @@ def fit_tls(data, srb):
                 '\n    | {T[4]:+4.2e}  {T[5]:+4.2e}  {T[2]:+4.2e} |\n'
                 .format(T=R, index=index + 1))
 
+    #Update atomic data.
     apply_tls(Utls, indexlist, srb)
 
 
