@@ -199,7 +199,7 @@ class Accumulator_Molecule(PDBMolecule):
         """
         super(Accumulator_Molecule, self).__init__()
         self.lengths = length
-        for atom in molecule.atoms():
+        for atom in molecule.atoms:
             if atom.get_type() == 'W':
                 continue
             # print
