@@ -61,6 +61,7 @@ def provide():
             afix = ''
             if atom.get_element() == 'H':
                 afix = 'AFIX 2'
+                afix = ''
 
             if not atom.get_element() == 'H' and not allA:
                 yield atom.name, atom.cart, atom.adp['cart_meas'], afix
