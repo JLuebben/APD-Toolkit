@@ -14,8 +14,14 @@ from lauescript.core import *
 from lauescript.cryst.iterators import database
 import numpy as np
 from numpy import tanh, log
-import matplotlib.pyplot as plt
-import seaborn as sns
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
+try:
+    import seaborn as sns
+except ImportError:
+    pass
 import itertools
 
 def run(pluginManager):
@@ -55,7 +61,7 @@ def run(pluginManager):
         # fileName = 'emission.eps'
         plotEm(list(range(RESOLUTION)), points, 'emission.eps')
     elif mode == 'absorption':
-        mp.plot(points)
+        plt.plot(points)
         fileName = 'absorption.eps'
     else:
         # mp.plot(1-(points/max(points)))
