@@ -27,9 +27,12 @@ import itertools
 def run(pluginManager):
     printer = pluginManager.setup()
     mode = pluginManager.arg('type')
-    if not mode in ['transmission', 'emission', 'absorption', 'composite']:
+    if not mode in ['transmission', 'emission', 'absorption', 'composite', 'oniom']:
         printer('ERROR: type not understood. "type" must be <emission>, <absorption> or <transmission>')
         pluginManager.exit()
+    if mode == 'oniom':
+        oniomMode(pluginManager, mode)
+        return
     data = database(pluginManager, asDict=True)
     molecule = pluginManager.get_variable('data')['exp']
     hk = 0.719385E0
@@ -71,6 +74,27 @@ def run(pluginManager):
 
 def gaussian(x, mu, sig):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+
+def oniomMode(pluginManager, mode):
+    data = database(pluginManager, asDict=True, overridePath='./')
+    molecule = pluginManager.get_variable('data')['exp']
+    hk = 0.719385E0
+    hc = 16.85773329E0
+    Temp = 100.
+    points = np.zeros(RESOLUTION)
+    mol = data['micro']
+    i=0
+    for freq0, I in zip(mol.allFrequencies, mol.IRIntensities):
+        i+=1
+        m_red = freq0[1]
+        if mode == 'emission':
+            delta = (1 / (tanh(hk * freq0[0] / Temp))) * hc / freq0[0] / m_red
+            points += gaussian(np.linspace(0, 4000, RESOLUTION), freq0[0], 5) * delta
+        else:
+            points += gaussian(np.linspace(0, 4000, RESOLUTION), freq0[0], 15) * I
+    plotTrans(list(range(RESOLUTION)), 1-(points/max(points)), 'transmission.eps')
+    print(i)
+
 
 def plotTrans(x, y, fileName, label=''):
     plt.gcf().clear()

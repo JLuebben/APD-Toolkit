@@ -9,6 +9,7 @@ calculation.
 KEY = 'micro'
 OPTION_ARGUMENTS = {'load': None,
                     'cluster': 15,
+                    'temp': None,
                     'match': 'geom'}
 HEADLINE = ' Using micro mode  '
 BOTTOMLINE = ' Exiting micro mode'
