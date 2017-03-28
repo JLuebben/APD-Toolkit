@@ -6,7 +6,8 @@ Created on 13.02.2017
 """
 KEY = 'IR'
 OPTION_ARGUMENTS = {'load': 'test.test',
-                    'type': 'transmission'}
+                    'type': 'transmission',
+                    'temp': 100}
 HEADLINE = '''GENERATE IR-SPECTRUM'''
 RESOLUTION = 4000
 
@@ -27,10 +28,10 @@ import itertools
 def run(pluginManager):
     printer = pluginManager.setup()
     mode = pluginManager.arg('type')
-    if not mode in ['transmission', 'emission', 'absorption', 'composite', 'oniom']:
+    if not mode in ['transmission', 'emission', 'absorption', 'composite', 'oniom', 'oniomem']:
         printer('ERROR: type not understood. "type" must be <emission>, <absorption> or <transmission>')
         pluginManager.exit()
-    if mode == 'oniom':
+    if mode.startswith('oniom'):
         oniomMode(pluginManager, mode)
         return
     data = database(pluginManager, asDict=True)
@@ -77,23 +78,24 @@ def gaussian(x, mu, sig):
 
 def oniomMode(pluginManager, mode):
     data = database(pluginManager, asDict=True, overridePath='./')
-    molecule = pluginManager.get_variable('data')['exp']
     hk = 0.719385E0
     hc = 16.85773329E0
-    Temp = 100.
+    Temp = int(pluginManager.arg('temp'))
     points = np.zeros(RESOLUTION)
     mol = data['micro']
     i=0
     for freq0, I in zip(mol.allFrequencies, mol.IRIntensities):
         i+=1
         m_red = freq0[1]
-        if mode == 'emission':
+        if mode == 'oniomem':
             delta = (1 / (tanh(hk * freq0[0] / Temp))) * hc / freq0[0] / m_red
             points += gaussian(np.linspace(0, 4000, RESOLUTION), freq0[0], 5) * delta
         else:
             points += gaussian(np.linspace(0, 4000, RESOLUTION), freq0[0], 15) * I
-    plotTrans(list(range(RESOLUTION)), 1-(points/max(points)), 'transmission.eps')
-    print(i)
+    if mode == 'oniom':
+        plotTrans(list(range(RESOLUTION)), 1-(points/max(points)), 'transmission.eps')
+    else:
+        plotEm(list(range(RESOLUTION)), points, 'emission.eps', temp = Temp)
 
 
 def plotTrans(x, y, fileName, label=''):
@@ -130,7 +132,7 @@ def plotTrans(x, y, fileName, label=''):
     # print('\nFigure written to <{}>.'.format(fileName))
 
 
-def plotEm(x, y, fileName):
+def plotEm(x, y, fileName, temp):
     flatui = ["#9b59b6", "#3498db", "#95a5a6",  "#34495e", "#2ecc71"]
     sns.set_palette(flatui[1:])
     sns.set_style("ticks")
@@ -138,7 +140,7 @@ def plotEm(x, y, fileName):
     plt.ylim(0, 2)
     yticks = list(range(3))
     plt.yticks(yticks)
-    plt.plot(x, y, marker='', label='100 K', color="#3498db")
+    plt.plot(x, y, marker='', label='{} K'.format(temp), color="#3498db")
 
     # yy = gaussian(np.linspace(0, 4000, RESOLUTION), 150, 75)* 5
     # plt.plot(x, yy, marker='', label='Missing', color=next(palette))
@@ -166,6 +168,7 @@ def plotEm(x, y, fileName):
     # plt.ylabel('Electron Density')
 
     plt.savefig(fileName)
+    return
 
     yy = gaussian(np.linspace(0, 4000, RESOLUTION), 150, 40)* 2
     plt.plot(x, yy, marker='', label='Missing', color="#9b59b6")
