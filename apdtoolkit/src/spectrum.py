@@ -63,7 +63,7 @@ def run(pluginManager):
     if mode == 'emission':
         # mp.plot(points)
         # fileName = 'emission.eps'
-        plotEm(list(range(RESOLUTION)), points, 'emission.eps')
+        plotEm(list(range(RESOLUTION)), points, 'emission.eps', temp=Temp)
     elif mode == 'absorption':
         plt.plot(points)
         fileName = 'absorption.eps'
@@ -85,6 +85,8 @@ def oniomMode(pluginManager, mode):
     mol = data['micro']
     i=0
     for freq0, I in zip(mol.allFrequencies, mol.IRIntensities):
+        if freq0[0] <= 10 if mode == 'oniomem' else 0:
+            continue
         i+=1
         m_red = freq0[1]
         if mode == 'oniomem':
@@ -137,7 +139,7 @@ def plotEm(x, y, fileName, temp):
     sns.set_palette(flatui[1:])
     sns.set_style("ticks")
     palette = itertools.cycle(sns.color_palette())
-    plt.ylim(0, 2)
+    # plt.ylim(0, 2)
     yticks = list(range(3))
     plt.yticks(yticks)
     plt.plot(x, y, marker='', label='{} K'.format(temp), color="#3498db")
